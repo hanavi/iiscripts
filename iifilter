@@ -1,0 +1,59 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use Term::ANSIColor;
+
+my $NICK = 'hanavi';
+
+my $C_DEF = color('reset');
+my $C_NICKBRACE = color('red');
+my $C_TIMEBRACE = color('red');
+my $C_NICK = color('cyan');
+my $C_TIME = color('magenta');
+my $C_DATE = color('bold blue');
+my $C_MYNICK = color('bold red');
+my $C_URL = color('green');
+my $C_NICKHILITE = color('white on_bright_blue');
+my $C_HILITE = color('white on_bright_red');
+my $C_INFO = color('bright_blue');
+
+my @matchwords = ("ai4lx", "hanavi", "kc4aaa");
+
+while (<>)
+{
+
+    my $line = $_;
+    my $date = $1 if $line =~ /^([0-9]{10})/;
+    my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime($date);
+    $year += 1900;
+    # my $newdate = sprintf "${C_DATE}%d-%02d-%02d ${C_TIME}%02d:%02d:%02d${C_DEF}",$year,$mon,$mday,$hour,$min,$sec;
+    my $newdate = sprintf "${C_TIME}%02d:%02d:%02d${C_DEF}",$hour,$min,$sec;
+
+    $line =~ s/^([0-9]{10})/${C_TIMEBRACE}[ ${C_DEF}$newdate ${C_TIMEBRACE}]${C_DEF}/;
+    $line =~ s/$NICK/ ${C_MYNICK}${NICK}${C_DEF}/g;
+
+    my $hilite = 0;
+    foreach my $matchword (@matchwords)
+    {
+        if ($line =~ m/$matchword/i)
+        {
+            if ($hilite == 0)
+            {
+                $line =~ s#<(.*)>#${C_NICKBRACE}<${C_NICKHILITE}$1${C_DEF}${C_NICKBRACE}>${C_DEF}#;
+            }
+            $line =~ s#($matchword)#${C_HILITE}$1${C_DEF}#gi;
+            $hilite = 1;
+        }
+    }
+    if ($hilite == 0)
+    {
+        $line =~ s#<(.*)>#${C_NICKBRACE}<${C_NICK}$1${C_NICKBRACE}>${C_DEF}# ;
+    }
+
+    $line =~ s#(-!-.*)#${C_INFO}$1${C_DEF}# if $line =~ m/-!-/;
+    $line =~ s#(\bhttp[s]?://[^\s]+)#${C_URL}$1${C_DEF}#;
+
+    print(color('reset'));
+    print $line;
+}
