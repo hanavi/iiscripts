@@ -63,11 +63,10 @@ while (<>)
     $line =~ s#(\bhttp[s]?://[^\s]+)#${C_URL}$1${C_DEF}#;
     $line =~ s/(#[^\s]+)/${C_CHANNEL}$1${C_DEF}/g;
 
+    my ($wchar, $hchar, $wpixels, $hpixels) = GetTerminalSize();
+    $Text::Wrap::columns = $wchar-5;
     print(color('reset'));
-    # my ($wchar, $hchar, $wpixels, $hpixels) = GetTerminalSize();
-    # $Text::Wrap::columns = $wchar-5;        #+ $adjust - 5;
-    # my $padding = "               | ";
-    # print ta_mbwrap($line, $wchar-2); #$padding, $line);
-    print $line;
+    # print $line;
+    print ta_mbwrap($line, $wchar-2);
 
 }
