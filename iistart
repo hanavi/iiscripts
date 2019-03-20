@@ -1,0 +1,16 @@
+#!/bin/bash
+
+IRCDIR=irc
+IRCSERVER=localhost
+IRCPORT=6767
+IRCNICK=ai4lx
+IICRED=$(cat iicred)
+
+# usage: /usr/local/src/ii/ii/ii <-s host> [-i <irc dir>] [-p <port>] [-u <sockname>] [-n <nick>] [-k <password>] [-f <fullname>]
+IIBIN=/usr/local/src/ii/ii/ii
+IIFLAGS="-s ${IRCSERVER} -n ${IRCNICK} -i ${IRCDIR} -p ${IRCPORT}"
+
+${IIBIN} ${IIFLAGS} >/dev/null &
+sleep 5
+echo "/PASS ${IICRED}" > ${IRCDIR}/${IRCSERVER}/in
+
