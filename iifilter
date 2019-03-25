@@ -23,8 +23,10 @@ my $C_NICKHILITE = color('white on_bright_blue');
 my $C_HILITE = color('white on_bright_red');
 my $C_INFO = color('bright_blue');
 my $C_CHANNEL = color('yellow');
+my $C_JOIN = color('bright_green');
+my $C_LEAVE = color('bright_red');
 
-my @matchwords = ("ai4lx", "hanavi", "kc4aaa");
+my @matchwords = ("ai4lx", "hanavi", "kc4aaa","penguin");
 
 while (<>)
 {
@@ -33,10 +35,10 @@ while (<>)
     my $date = $1 if $line =~ /^([0-9]{10})/;
     my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime($date);
     $year += 1900;
-    my $newdate = sprintf "${C_TIME}%02d:%02d:%02d${C_DEF}",$hour,$min,$sec;
+    my $newdate = sprintf " ${C_TIME}%02d:%02d:%02d${C_DEF}",$hour,$min,$sec;
 
     # Format the time
-    $line =~ s/^([0-9]{10})/${C_TIMEBRACE}[ ${C_DEF}$newdate ${C_TIMEBRACE}]${C_DEF}/;
+    $line =~ s/^([0-9]{10})/${C_TIMEBRACE}[  ${C_DEF}$newdate ${C_TIMEBRACE}]${C_DEF}/;
 
     #Format my nick
     $line =~ s/$NICK/ ${C_MYNICK}${NICK}${C_DEF}/g;
@@ -50,7 +52,7 @@ while (<>)
             {
                 $line =~ s#<(.*?)>#${C_NICKBRACE}<${C_NICKHILITE}$1${C_DEF}${C_NICKBRACE}>${C_DEF}#;
             }
-            $line =~ s#($matchword)#${C_HILITE}$1${C_DEF}#gi;
+            $line =~ s/($matchword)/${C_HILITE}${1}${C_DEF}/gi;
             $hilite = 1;
         }
     }
@@ -60,7 +62,11 @@ while (<>)
     }
 
     $line =~ s#(-!-.*)#${C_INFO}$1${C_DEF}# if $line =~ m/-!-/;
-    $line =~ s#(\bhttp[s]?://[^\s]+)#${C_URL}$1${C_DEF}#;
+    $line =~ s#joined#${C_JOIN}joined${C_INFO}# if $line =~ m/-!-/;
+    $line =~ s#-!- ([^(]+)#-!- ${C_JOIN}$1${C_INFO}# if ($line =~ m/-!-/ && $line =~ m/joined/);
+    $line =~ s#left#${C_LEAVE}left${C_INFO}# if $line =~ m/-!-/;
+    $line =~ s#-!- ([^(]+)#-!- ${C_LEAVE}$1${C_INFO}# if ($line =~ m/-!-/ && $line =~ m/left/);
+    $line =~ s#(\bhttp[s]?://[^\s]+)#${C_URL}$1${C_DEF}#g;
     $line =~ s/(#[^\s]+)/${C_CHANNEL}$1${C_DEF}/g;
 
     my ($wchar, $hchar, $wpixels, $hpixels) = GetTerminalSize();
