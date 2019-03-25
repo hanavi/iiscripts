@@ -1,0 +1,29 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+my $filename = 'in';
+
+sub penguin
+{
+    open my $f, '>', $filename or die $!;
+    print $f "My army of penguins will soon take over the world!\n";
+    close $f;
+
+}
+
+
+while (<>)
+{
+    if ($_ =~ m/penguin/i && $_ !~ m/<ai4lx>/)
+    {
+        print "Test\n";
+        penguin()
+    }
+
+}
+
+
+
+
